@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskRadar — Proceso Proactivo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="header-inner">
+        <span class="logo">TaskRadar</span>
+        <div class="step-indicator" id="stepIndicator"></div>
+      </div>
+    </header>
+
+    <main class="main" id="main"></main>
+
+    <footer class="footer" id="footer">
+      <div class="footer-inner">
+        <button class="btn btn-ghost" id="btnBack" style="display:none">← Atrás</button>
+        <button class="btn btn-primary" id="btnNext" disabled>Continuar →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="notion.js"></script>
+  <script src="ai.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
