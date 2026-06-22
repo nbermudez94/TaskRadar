@@ -34,7 +34,6 @@ async function getBacklogTickets(selectedProjects) {
       const getName = p => p?.title?.[0]?.plain_text || '';
       const getSelect = p => p?.select?.name || null;
       const getMultiSelect = p => (p?.multi_select || []).map(o => o.name);
-      const getRichText = p => p?.rich_text?.[0]?.plain_text || null;
 
       return {
         id: page.id,
@@ -42,7 +41,7 @@ async function getBacklogTickets(selectedProjects) {
         name: getName(props['Name']),
         priority: getSelect(props['Priority']),
         effort: getSelect(props['Effort']),
-        category: getRichText(props['Category']),
+        category: getSelect(props['Category']),
         projects: getMultiSelect(props['Project'])
       };
     });
