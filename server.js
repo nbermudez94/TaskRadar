@@ -64,30 +64,39 @@ app.post('/notion', async (req, res) => {
   }
 });
 
-// Proxy para Anthropic API
-app.post('/anthropic', async (req, res) => {
+// Proxy para Groq API
+app.post('/groq', async (req, res) => {
   const cfg = (() => { try { return require('./config.js'); } catch { return {}; } })();
-  const apiKey = cfg.ANTHROPIC_API_KEY || CONFIG.ANTHROPIC_API_KEY;
-  const bodyStr = JSON.stringify(req.body);
+  const apiKey = cfg.GROQ_API_KEY || CONFIG.GROQ_API_KEY;
+  const { system, prompt, maxTokens } = req.body;
 
+  const payload = {
+    model: 'llama-3.3-70b-versatile',
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: maxTokens || 400
+  };
+
+  const bodyStr = JSON.stringify(payload);
   const options = {
-    hostname: 'api.anthropic.com',
+    hostname: 'api.groq.com',
     port: 443,
-    path: '/v1/messages',
+    path: '/openai/v1/chat/completions',
     method: 'POST',
     headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(bodyStr)
     }
   };
 
   try {
-    const result = await proxyRequest(options, req.body);
+    const result = await proxyRequest(options, payload);
     res.status(result.status).json(result.body);
   } catch (err) {
-    res.status(500).json({ error: 'Error conectando con Anthropic', detail: err.message });
+    res.status(500).json({ error: 'Error conectando con Groq', detail: err.message });
   }
 });
 

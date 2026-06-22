@@ -1,17 +1,14 @@
-async function anthropicRequest(systemPrompt, userPrompt, maxTokens) {
-  const res = await fetch('http://localhost:3000/anthropic', {
+async function groqRequest(system, prompt, maxTokens) {
+  const res = await fetch('http://localhost:3000/groq', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
-    })
+    body: JSON.stringify({ system, prompt, maxTokens })
   });
-  if (!res.ok) throw new Error(`Anthropic error ${res.status}`);
+  if (!res.ok) throw new Error(`Groq error ${res.status}`);
   const data = await res.json();
-  return data.content?.[0]?.text || '';
+  const text = data.choices?.[0]?.message?.content;
+  if (!text) throw new Error('Respuesta vacía de Groq');
+  return text;
 }
 
 function buildContext(state) {
@@ -63,12 +60,12 @@ function detectCamino(state) {
 
 async function getNextStep(state) {
   const system = 'Sos un senior UX designer. Español rioplatense. Sin markdown. Sin asteriscos. Respuesta corta.';
-  const user = `Contexto: ${buildContext(state)}\n\nEscribí 2 oraciones concretas sobre el próximo paso para ESTE caso específico. Sin introducción, sin comillas.`;
-  return anthropicRequest(system, user, 400);
+  const prompt = `Contexto: ${buildContext(state)}\n\nEscribí 2 oraciones concretas sobre el próximo paso para ESTE caso específico. Sin introducción, sin comillas.`;
+  return groqRequest(system, prompt, 400);
 }
 
 async function generateUserStory(state) {
   const system = 'Sos un senior UX designer. Español rioplatense. Sin markdown. Sin asteriscos.';
-  const user = `Contexto del proceso completado:\n${buildContext(state)}\n\nGenerá una user story completa lista para estimar, con este formato exacto:\n\nComo [tipo de usuario], quiero [acción],\npara [beneficio].\n\nContexto: [1-2 oraciones de contexto para el equipo de desarrollo]\n\nCriterios de aceptación:\n- [criterio 1]\n- [criterio 2]\n- [criterio 3]`;
-  return anthropicRequest(system, user, 800);
+  const prompt = `Contexto del proceso completado:\n${buildContext(state)}\n\nGenerá una user story completa lista para estimar, con este formato exacto:\n\nComo [tipo de usuario], quiero [acción],\npara [beneficio].\n\nContexto: [1-2 oraciones de contexto para el equipo de desarrollo]\n\nCriterios de aceptación:\n- [criterio 1]\n- [criterio 2]\n- [criterio 3]`;
+  return groqRequest(system, prompt, 800);
 }
