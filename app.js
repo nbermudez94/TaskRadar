@@ -558,7 +558,8 @@ function attachStep1Events() {
 }
 
 function attachAccordionEvents() {
-  document.querySelectorAll('.accordion-header').forEach(header => {
+  document.querySelectorAll('.accordion-header:not([data-bound])').forEach(header => {
+    header.dataset.bound = '1';
     header.addEventListener('click', () => {
       const body = header.nextElementSibling;
       const arrow = header.querySelector('.accordion-arrow');
