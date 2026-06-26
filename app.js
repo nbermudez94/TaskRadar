@@ -35,6 +35,12 @@ const BADGE_CLASS = {
   'Estratégica':        'estrategica'
 };
 
+const MICRO_ICON = {
+  chica:       `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`,
+  estrategica: `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,11 5,6 8,8 13,2"/><polyline points="10,2 13,2 13,5"/></svg>`,
+  otra:        `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4h8"/><path d="M7 2l3 2-3 2"/><path d="M1 10h8"/><path d="M7 8l3 2-3 2"/></svg>`
+};
+
 const STEPS = [
   { n: 1, title: '¿Qué te pasa?',  hint: 'Tu situación' },
   { n: 2, title: 'El detalle',     hint: 'Acotamos un poco' },
@@ -316,13 +322,13 @@ function renderStep4() {
         </div>
         <div class="card-micro-actions">
           <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="chica">
-            <span class="micro-icon">↙</span> Más chica
+            <span class="micro-icon">${MICRO_ICON.chica}</span> Más chica
           </button>
           <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="estrategica">
-            <span class="micro-icon">↗</span> Estratégica
+            <span class="micro-icon">${MICRO_ICON.estrategica}</span> Estratégica
           </button>
           <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="otra">
-            <span class="micro-icon">↺</span> Otra
+            <span class="micro-icon">${MICRO_ICON.otra}</span> Otra
           </button>
         </div>
         <button class="btn-elegir-camino" data-index="${i}">Elegir camino</button>
@@ -390,15 +396,24 @@ function renderStep5() {
     </div>
     ${state.outputFinal ? `
       <div class="refine-section">
-        <div class="section-title">Ajustar output</div>
-        <div class="refine-btns">
-          <button class="btn btn-ghost btn-sm" data-refine="Hacelo más corto, mantené lo esencial">Más corto</button>
-          <button class="btn btn-ghost btn-sm" data-refine="Hacelo más informal y directo, tono rioplatense">Más informal</button>
-          <button class="btn btn-ghost btn-sm" data-refine="Hacelo más claro y estructurado">Más claro</button>
-          <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una checklist con ítems accionables usando formato '- [ ] ítem'">→ Checklist</button>
-          <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una tarea con título, descripción breve y primer paso">→ Tarea</button>
-          <button class="btn btn-outline btn-sm" id="btnRegenerar">Regenerar ↺</button>
+        <div class="refine-groups">
+          <div class="refine-group">
+            <span class="refine-label">Ajustar</span>
+            <div class="refine-btns">
+              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más corto, mantené lo esencial">Más corto</button>
+              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más informal y directo, tono rioplatense">Más informal</button>
+              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más claro y estructurado">Más claro</button>
+            </div>
+          </div>
+          <div class="refine-group">
+            <span class="refine-label">Convertir a</span>
+            <div class="refine-btns">
+              <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una checklist con ítems accionables usando formato '- [ ] ítem'">Checklist</button>
+              <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una tarea con título, descripción breve y primer paso">Tarea</button>
+            </div>
+          </div>
         </div>
+        <button class="btn-regenerar" id="btnRegenerar">↺ Regenerar</button>
       </div>` : ''}`;
 
   $footer.innerHTML = `

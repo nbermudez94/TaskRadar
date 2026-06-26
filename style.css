@@ -155,14 +155,15 @@ body {
   flex: 1;
   width: 100%;
   max-width: 1080px;
-  padding: 56px 56px 120px;
+  margin: 0 auto;
+  padding: 52px 56px 100px;
 }
 
 .footer {
   background: rgba(10, 10, 12, 0.85);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
-  padding: 16px 56px;
+  padding: 16px 0;
   position: sticky;
   bottom: 0;
   z-index: 10;
@@ -172,6 +173,8 @@ body {
 
 .footer-inner {
   max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 56px;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -765,29 +768,44 @@ textarea::placeholder { color: var(--text-muted); }
 }
 
 /* Grid de 3 cards */
+/* Grid de 3 cards — subgrid para alinear secciones entre cards */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-rows: repeat(8, auto);
+  column-gap: 16px;
+  row-gap: 12px;
   animation: fadeIn 0.2s ease;
 }
 
 @media (max-width: 640px) {
-  .cards-grid { grid-template-columns: 1fr; }
+  .cards-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .action-card {
+    grid-row: auto;
+    grid-template-rows: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .action-card {
+  grid-row: 1 / span 8;
+  display: grid;
+  grid-template-rows: subgrid;
   background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  padding: 20px;
   transition: border-color var(--transition);
 }
 
-.action-card:hover { border-color: #555; }
+.action-card > * { align-self: start; }
+
+.action-card:hover { border-color: #444; }
 
 .card-badge {
   display: inline-block;
@@ -864,7 +882,6 @@ textarea::placeholder { color: var(--text-muted); }
   text-transform: uppercase;
   letter-spacing: 0.6px;
   color: var(--accent);
-  margin: 6px 0 10px;
 }
 
 .card-porque {
@@ -872,13 +889,11 @@ textarea::placeholder { color: var(--text-muted); }
   font-style: italic;
   color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 14px;
 }
 
 .card-entregable {
   font-size: 12px;
   color: var(--text-muted);
-  margin-bottom: 14px;
   line-height: 1.5;
 }
 
@@ -894,7 +909,6 @@ textarea::placeholder { color: var(--text-muted); }
   background: var(--surface2);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  margin-bottom: 14px;
   border-left: 2px solid var(--accent);
 }
 
@@ -918,8 +932,7 @@ textarea::placeholder { color: var(--text-muted); }
 .card-micro-actions {
   display: flex;
   gap: 6px;
-  margin-bottom: 10px;
-  padding-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid var(--border);
 }
 
@@ -971,20 +984,18 @@ textarea::placeholder { color: var(--text-muted); }
 .btn-elegir-camino:hover { opacity: 0.85; }
 
 /* Card loading state */
-.action-card-loading {
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.action-card-loading { /* hereda grid/subgrid de .action-card */ }
 
-.card-loading-inner {
+.action-card-loading .card-loading-inner {
+  grid-row: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   color: var(--text-muted);
   font-size: 13px;
+  min-height: 200px;
 }
 
 /* Output final */
@@ -1018,14 +1029,52 @@ textarea::placeholder { color: var(--text-muted); }
   color: var(--text);
 }
 
-.refine-section { margin-top: 4px; }
+/* Paso 5 — acciones de refinamiento agrupadas */
+.refine-section {
+  margin-top: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
 
-.refine-section .section-title {
-  margin-bottom: 10px;
+.refine-groups {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.refine-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.refine-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-dim);
 }
 
 .refine-btns {
   display: flex;
+  gap: 6px;
   flex-wrap: wrap;
-  gap: 8px;
 }
+
+.btn-regenerar {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn-regenerar:hover { color: var(--text); border-color: #555; }
