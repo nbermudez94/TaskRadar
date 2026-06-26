@@ -47,7 +47,8 @@ function freshState() {
     outputType: null,
     aiResult: null,
     cardSeleccionada: null,
-    outputFinal: null
+    outputFinal: null,
+    loadingCards: new Set()
   };
 }
 
@@ -234,52 +235,63 @@ function renderStep4() {
 
   const { diagnostico, cards } = state.aiResult;
 
+  function buildCardHtml(card, i) {
+    const badge = BADGE_CLASS[card.tipo] || 'rapida';
+    if (state.loadingCards.has(i)) {
+      return `
+        <div class="action-card action-card-loading">
+          <div class="card-loading-inner">
+            <div class="spinner"></div>
+            <span>Generando...</span>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="action-card" data-index="${i}">
+        <div class="card-header-row">
+          <span class="card-badge card-badge-${badge}">${esc(card.tipo)}</span>
+          <span class="card-time">${esc(card.tiempo)}</span>
+        </div>
+        <div class="card-title">${esc(card.titulo)}</div>
+        <div class="card-bloqueo">Resuelve: ${esc(card.bloqueo)}</div>
+        <div class="card-porque">"${esc(card.porque)}"</div>
+        <div class="card-primer-paso-box">
+          <div class="card-primer-paso-label">Primer paso concreto</div>
+          <div class="card-primer-paso-text">${esc(card.primerPaso)}</div>
+        </div>
+        <div class="card-entregable">
+          <span class="card-entregable-label">Entregable:</span> ${esc(card.outputEsperado)}
+        </div>
+        <div class="card-micro-actions">
+          <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="chica">
+            <span class="micro-icon">↙</span> Más chica
+          </button>
+          <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="estrategica">
+            <span class="micro-icon">↗</span> Estratégica
+          </button>
+          <button class="card-micro-btn btn-refine" data-index="${i}" data-tipo="otra">
+            <span class="micro-icon">↺</span> Otra
+          </button>
+        </div>
+        <button class="btn-elegir-camino" data-index="${i}">Elegir camino</button>
+      </div>`;
+  }
+
   $main.innerHTML = `
     ${breadcrumb()}
     <div class="step-header">
       <div class="step-title">Te propongo 3 caminos</div>
     </div>
     <div class="diagnostico-box">${esc(diagnostico)}</div>
-    <div class="cards-grid">
-      ${cards.map((card, i) => {
-        const badge = BADGE_CLASS[card.tipo] || 'rapida';
-        return `
-          <div class="action-card" data-index="${i}">
-            <div>
-              <span class="card-badge card-badge-${badge}">${esc(card.tipo)}</span>
-              <div class="card-title">${esc(card.titulo)}</div>
-            </div>
-            <div class="card-details">
-              <div class="card-detail-row">
-                <span class="card-detail-label">¿Por qué?</span>
-                <span>${esc(card.porque)}</span>
-              </div>
-              <div class="card-detail-row">
-                <span class="card-detail-label">Tiempo estimado</span>
-                <span>${esc(card.tiempo)}</span>
-              </div>
-              <div class="card-detail-row">
-                <span class="card-detail-label">Primer paso</span>
-                <span>${esc(card.primerPaso)}</span>
-              </div>
-              <div class="card-detail-row">
-                <span class="card-detail-label">Output esperado</span>
-                <span>${esc(card.outputEsperado)}</span>
-              </div>
-            </div>
-            <div class="card-actions">
-              <button class="btn btn-primary btn-sm btn-elegir" data-index="${i}">Elegir este →</button>
-              <button class="btn btn-ghost btn-sm btn-otra">Dame otra ↺</button>
-            </div>
-          </div>`;
-      }).join('')}
+    <div class="cards-grid" id="cardsGrid">
+      ${cards.map((card, i) => buildCardHtml(card, i)).join('')}
     </div>`;
 
   $footer.innerHTML = `<div class="footer-inner"><button class="btn btn-ghost" id="btnBack">← Atrás</button></div>`;
 
   document.getElementById('btnBack').addEventListener('click', () => { state.step = 3; render(); });
 
-  $main.querySelectorAll('.btn-elegir').forEach(btn => {
+  $main.querySelectorAll('.btn-elegir-camino').forEach(btn => {
     btn.addEventListener('click', async () => {
       state.cardSeleccionada = cards[parseInt(btn.dataset.index)];
       state.outputFinal = null;
@@ -289,11 +301,20 @@ function renderStep4() {
     });
   });
 
-  $main.querySelectorAll('.btn-otra').forEach(btn => {
+  $main.querySelectorAll('.btn-refine').forEach(btn => {
     btn.addEventListener('click', async () => {
-      state.aiResult = null;
-      render();
-      await loadCards();
+      const i = parseInt(btn.dataset.index);
+      const tipo = btn.dataset.tipo;
+      state.loadingCards.add(i);
+      document.getElementById('cardsGrid').innerHTML = cards.map((c, idx) => buildCardHtml(c, idx)).join('');
+      try {
+        const newCard = await refineCard(cards[i], tipo, state);
+        state.aiResult.cards[i] = newCard;
+      } catch {
+        // keep original on error
+      }
+      state.loadingCards.delete(i);
+      renderStep4();
     });
   });
 }

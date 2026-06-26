@@ -122,6 +122,44 @@ Tiene que ser copiable y listo para usar directamente.`;
   return groqRequest(SYSTEM_OUTPUT, prompt, 700);
 }
 
+async function refineCard(card, instruction, state) {
+  const INSTRUCCIONES = {
+    chica:       `Generá una versión más pequeña y rápida de esta acción. Máximo 15 minutos, bajo esfuerzo.`,
+    estrategica: `Generá una versión más estratégica y de mayor impacto de esta acción. Puede llevar más tiempo.`,
+    otra:        `Generá una acción completamente diferente del mismo tipo (${card.tipo}) para el mismo contexto. No repitas el título ni el primer paso anterior.`
+  };
+
+  const tieneTexto = state.textoLibre && state.textoLibre.trim().length > 2;
+
+  const prompt = `${tieneTexto ? `Situación descrita por la persona: "${state.textoLibre.trim()}"` : `Situación: ${state.situacion} → ${state.detalle}`}
+
+Acción actual a modificar:
+- Título: ${card.titulo}
+- Tipo: ${card.tipo}
+- Por qué: ${card.porque}
+- Primer paso: ${card.primerPaso}
+
+Instrucción: ${INSTRUCCIONES[instruction]}
+
+Respondé SOLO con este JSON:
+{
+  "titulo": "título concreto de la acción",
+  "tipo": "${card.tipo}",
+  "bloqueo": "qué bloqueo resuelve",
+  "porque": "por qué sirve para este caso",
+  "tiempo": "X min",
+  "primerPaso": "acción concreta para arrancar ahora",
+  "outputEsperado": "qué queda al terminar"
+}`;
+
+  const raw = await groqRequest(SYSTEM_CARDS, prompt, 500);
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Respuesta de IA inválida');
+  const parsed = JSON.parse(match[0]);
+  parsed.tipo = card.tipo;
+  return parsed;
+}
+
 async function refineOutput(currentOutput, instruction) {
   const system = `Sos un asistente interno. Modificá el artefacto según la instrucción.
 Español rioplatense. Solo devolvé el artefacto modificado, sin explicaciones.`;
