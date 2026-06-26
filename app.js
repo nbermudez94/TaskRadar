@@ -35,6 +35,14 @@ const BADGE_CLASS = {
   'Estratégica':        'estrategica'
 };
 
+const STEPS = [
+  { n: 1, title: '¿Qué te pasa?',  hint: 'Tu situación' },
+  { n: 2, title: 'El detalle',     hint: 'Acotamos un poco' },
+  { n: 3, title: 'Qué producir',   hint: 'El formato final' },
+  { n: 4, title: 'Los caminos',    hint: '3 propuestas' },
+  { n: 5, title: 'Tu acción',      hint: 'Listo para usar' }
+];
+
 // ─── Estado ─────────────────────────────────────────────
 let state = freshState();
 
@@ -53,38 +61,88 @@ function freshState() {
 }
 
 // ─── DOM refs ────────────────────────────────────────────
-const $main          = document.getElementById('main');
-const $footer        = document.getElementById('footer');
-const $stepIndicator = document.getElementById('stepIndicator');
+const $main    = document.getElementById('main');
+const $footer  = document.getElementById('footer');
+const $sidebar = document.getElementById('sidebar');
 
 // ─── Helpers ─────────────────────────────────────────────
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function updateDots() {
-  const total = 5;
-  $stepIndicator.innerHTML = Array.from({ length: total }, (_, i) => {
-    const n = i + 1;
-    const cls = n < state.step ? 'done' : n === state.step ? 'active' : '';
-    return `<div class="step-dot ${cls}"></div>`;
-  }).join('');
+// Valor seleccionado en cada paso, para mostrar bajo el título en el sidebar
+function stepValue(n) {
+  switch (n) {
+    case 1: { const s = SITUACIONES.find(x => x.id === state.situacion); return s ? s.label : ''; }
+    case 2: return state.detalle || '';
+    case 3: { const o = OUTPUT_TYPES.find(x => x.id === state.outputType); return o ? o.label : ''; }
+    case 4: return state.aiResult ? '3 caminos listos' : '';
+    case 5: return state.cardSeleccionada ? state.cardSeleccionada.titulo : '';
+    default: return '';
+  }
 }
 
-function breadcrumb() {
-  const items = [];
-  if (state.situacion) { const s = SITUACIONES.find(x => x.id === state.situacion); if (s) items.push(s.label); }
-  if (state.detalle)   items.push(state.detalle);
-  if (state.outputType){ const o = OUTPUT_TYPES.find(x => x.id === state.outputType); if (o) items.push(o.label); }
-  if (!items.length) return '';
-  return `<div class="breadcrumb">${
-    items.map((t, i) => `${i > 0 ? '<span class="breadcrumb-sep">→</span>' : ''}<span class="breadcrumb-item">${esc(t)}</span>`).join('')
-  }</div>`;
+// ¿Se puede saltar a este paso? (requiere que lo previo esté completo)
+function stepReachable(n) {
+  switch (n) {
+    case 1: return true;
+    case 2: return !!state.situacion;
+    case 3: return !!state.detalle;
+    case 4: return !!state.outputType;
+    case 5: return !!state.cardSeleccionada;
+    default: return false;
+  }
+}
+
+async function goToStep(n) {
+  if (n === state.step || !stepReachable(n)) return;
+  state.step = n;
+  render();
+  if (n === 4 && !state.aiResult) await loadCards();
+  if (n === 5 && !state.outputFinal) await loadOutput();
+}
+
+function renderSidebar() {
+  $sidebar.innerHTML = `
+    <div class="sidebar-brand">
+      <span class="logo">TaskRadar</span>
+      <span class="sidebar-tagline">No tengo tareas</span>
+    </div>
+    <nav class="sidebar-nav">
+      ${STEPS.map(s => {
+        const reachable = stepReachable(s.n);
+        const isActive  = s.n === state.step;
+        const isDone     = s.n < state.step && reachable;
+        const val        = stepValue(s.n);
+        const cls = ['nav-step',
+          isActive ? 'active' : '',
+          isDone ? 'done' : '',
+          !reachable ? 'locked' : ''
+        ].filter(Boolean).join(' ');
+        return `
+          <button class="${cls}" data-step="${s.n}" ${!reachable ? 'disabled' : ''}>
+            <span class="nav-marker">${isDone ? '✓' : s.n}</span>
+            <span class="nav-text">
+              <span class="nav-title">${esc(s.title)}</span>
+              <span class="nav-sub">${esc(val || s.hint)}</span>
+            </span>
+          </button>`;
+      }).join('')}
+    </nav>
+    <button class="sidebar-reset" id="btnSidebarReset">↺ Empezar de nuevo</button>`;
+
+  $sidebar.querySelectorAll('.nav-step').forEach(btn => {
+    btn.addEventListener('click', () => goToStep(parseInt(btn.dataset.step)));
+  });
+  document.getElementById('btnSidebarReset').addEventListener('click', () => {
+    state = freshState();
+    render();
+  });
 }
 
 // ─── Render principal ────────────────────────────────────
 function render() {
-  updateDots();
+  renderSidebar();
   switch (state.step) {
     case 1: renderStep1(); break;
     case 2: renderStep2(); break;
@@ -98,7 +156,6 @@ function render() {
 function renderStep1() {
   $main.innerHTML = `
     <div class="step-header">
-      <div class="step-label">Paso 1 de 3</div>
       <div class="step-title">¿Qué te está pasando realmente?</div>
       <div class="step-subtitle">Te ayudo a encontrar algo útil para hacer ahora.</div>
     </div>
@@ -149,9 +206,7 @@ function renderStep2() {
   if (!q) { state.step = 1; render(); return; }
 
   $main.innerHTML = `
-    ${breadcrumb()}
     <div class="step-header">
-      <div class="step-label">Paso 2 de 3</div>
       <div class="step-title">${esc(q.pregunta)}</div>
     </div>
     <div class="option-list">
@@ -183,9 +238,7 @@ function renderStep2() {
 // ─── Paso 3: ¿Qué querés producir? ──────────────────────
 function renderStep3() {
   $main.innerHTML = `
-    ${breadcrumb()}
     <div class="step-header">
-      <div class="step-label">Paso 3 de 3</div>
       <div class="step-title">¿Qué querés producir al final?</div>
     </div>
     <div class="option-list">
@@ -222,7 +275,6 @@ function renderStep3() {
 function renderStep4() {
   if (!state.aiResult) {
     $main.innerHTML = `
-      ${breadcrumb()}
       <div class="loading-state">
         <div class="spinner" style="width:36px;height:36px;border-width:3px"></div>
         <div class="loading-title">Analizando tu situación...</div>
@@ -278,7 +330,6 @@ function renderStep4() {
   }
 
   $main.innerHTML = `
-    ${breadcrumb()}
     <div class="step-header">
       <div class="step-title">Te propongo 3 caminos</div>
     </div>
@@ -325,7 +376,6 @@ function renderStep5() {
   const badge = BADGE_CLASS[card?.tipo] || 'rapida';
 
   $main.innerHTML = `
-    ${breadcrumb()}
     <div class="step-header">
       <div class="step-title">Tu próxima acción</div>
     </div>
