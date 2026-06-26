@@ -11,61 +11,122 @@ async function groqRequest(system, prompt, maxTokens) {
   return text;
 }
 
-function buildContext(state) {
-  const camino = detectCamino(state);
-  const proyectos = state.projects.join(', ');
+const SYSTEM_CARDS = `Sos un asistente interno de destrabe para un equipo de diseño UX.
+Tu objetivo es ayudar a alguien que se siente trabado, sin tareas o sin dirección.
+Respondé SOLO con JSON válido, sin texto extra ni markdown adicional.
+Tono: práctico, humano, un poco liviano. Español rioplatense.
+No des consejos genéricos. No pidas proyecto primero.
+Siempre generá acciones concretas y accionables.`;
 
-  const CAMINO_LABELS = {
-    A: 'Backlog — pendiente encontrado',
-    B: 'Backlog — ticket seleccionado',
-    C: 'Trabajo previo',
-    D: 'Evidencia disponible',
-    E: 'Sin insumos — dirección generada'
+async function generateCards(state) {
+  const SITUACION_LABELS = {
+    sin_asignar: 'No tengo nada asignado',
+    no_se_cual: 'Tengo cosas, pero no sé cuál agarrar',
+    esperando: 'Estoy esperando a alguien',
+    idea_suelta: 'Tengo una idea suelta',
+    aportar_valor: 'Quiero aportar valor, pero no sé desde dónde',
+    poca_energia: 'Estoy con poca energía',
+    trabado: 'No sé, estoy trabado'
+  };
+  const OUTPUT_LABELS = {
+    nota: 'una nota', mensaje: 'un mensaje de Slack', checklist: 'una checklist',
+    tarea: 'una tarea', propuesta: 'una propuesta',
+    preguntas: 'preguntas para destrabar', sorpresa: 'lo que mejor le quede al caso'
   };
 
-  let ctx = `Proyectos: ${proyectos}. Camino ${camino} — ${CAMINO_LABELS[camino]}.`;
+  const prompt = `La persona respondió:
+- Situación: ${SITUACION_LABELS[state.situacion] || state.situacion}
+- Detalle: ${state.detalle}
+- Quiere producir: ${OUTPUT_LABELS[state.outputType] || state.outputType}
+${state.textoLibre ? `- Contexto adicional: ${state.textoLibre}` : ''}
 
-  if (state.bp === 'si' && state.bpTipo) {
-    ctx += ` Tipo: ${state.bpTipo === 'Otro' ? state.bpOtro : state.bpTipo}.`;
-  }
-  if (state.ticketSeleccionado) {
-    ctx += ` Ticket: ${state.ticketSeleccionado}.`;
-  }
-  if (state.emp === 'si' && state.empTipo) {
-    ctx += ` Trabajo previo: ${state.empTipo === 'Otro' ? state.empOtro : state.empTipo}.`;
-  }
-  if (state.ev === 'si' && state.evTipo) {
-    ctx += ` Evidencia: ${state.evTipo}.`;
-  }
-  if (state.dir) {
-    ctx += ` Dirección: ${state.dir === 'prob' ? 'Buscar problemas' : 'Proponer mejoras'}.`;
-  }
-  if (state.dirMetodo) ctx += ` Método: ${state.dirMetodo}.`;
-  if (state.dirArea) ctx += ` Área: ${state.dirArea}.`;
-  if (state.hallazgo) ctx += ` Hallazgo: ${state.hallazgo}.`;
-  if (state.out) ctx += ` Output: ${state.out}.`;
-  if (state.outDraft) ctx += ` Draft: ${state.outDraft}.`;
-  if (state.notas) ctx += ` Notas: ${state.notas}.`;
+Detectá el tipo de bloqueo y generá exactamente 3 caminos de acción distintos.
 
-  return ctx;
+Respondé con este JSON exacto:
+{
+  "diagnostico": "1-2 frases sobre qué tipo de bloqueo es, tono rioplatense, empezando con 'Parece...' o similar",
+  "bloqueo": "tipo principal de bloqueo en una o dos palabras",
+  "cards": [
+    {
+      "titulo": "título concreto de la acción",
+      "tipo": "Acción rápida",
+      "bloqueo": "qué bloqueo específico resuelve",
+      "porque": "por qué esta acción sirve para este caso puntual",
+      "tiempo": "X min",
+      "primerPaso": "acción concreta y específica para arrancar ahora mismo",
+      "outputEsperado": "qué queda al terminar"
+    },
+    {
+      "titulo": "...",
+      "tipo": "Útil para el equipo",
+      "bloqueo": "...",
+      "porque": "...",
+      "tiempo": "...",
+      "primerPaso": "...",
+      "outputEsperado": "..."
+    },
+    {
+      "titulo": "...",
+      "tipo": "Estratégica",
+      "bloqueo": "...",
+      "porque": "...",
+      "tiempo": "...",
+      "primerPaso": "...",
+      "outputEsperado": "..."
+    }
+  ]
+}`;
+
+  const raw = await groqRequest(SYSTEM_CARDS, prompt, 1000);
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Respuesta de IA inválida');
+  return JSON.parse(match[0]);
 }
 
-function detectCamino(state) {
-  if (state.bp === 'si') return 'A';
-  if (state.bp === 'no' && state.ticketSeleccionado) return 'B';
-  if (state.emp === 'si') return 'C';
-  if (state.ev === 'si') return 'D';
-  return 'E';
+const SYSTEM_OUTPUT = `Sos un asistente interno de destrabe para un equipo de diseño UX.
+Generá un artefacto de trabajo práctico, listo para copiar y usar.
+Español rioplatense. Sin consejos genéricos. Solo el artefacto, sin explicaciones extra ni encabezados que digan "Aquí está tu...".
+- Si es mensaje de Slack: natural, directo, listo para enviar. Sin formato markdown.
+- Si es checklist: ítems accionables con guión y checkbox tipo "- [ ] ítem"
+- Si es tarea: título, descripción breve, criterios de aceptación y primer paso
+- Si es propuesta: problema / propuesta / por qué importa / próximo paso
+- Si son preguntas: preguntas cortas y precisas para destrabar, numeradas
+- Si es nota: estructurada, con secciones si tiene sentido, escaneable
+- Si es sorpresa: elegí el formato más útil para el caso`;
+
+async function generateOutput(card, outputType, state) {
+  const OUTPUT_LABELS = {
+    nota: 'Nota', mensaje: 'Mensaje de Slack', checklist: 'Checklist',
+    tarea: 'Tarea', propuesta: 'Propuesta',
+    preguntas: 'Preguntas para destrabar', sorpresa: 'el formato más útil'
+  };
+
+  const prompt = `La persona eligió esta acción:
+Título: ${card.titulo}
+Tipo: ${card.tipo}
+Por qué sirve: ${card.porque}
+Primer paso: ${card.primerPaso}
+Output esperado: ${card.outputEsperado}
+
+Situación base: ${state.situacion} → ${state.detalle}
+${state.textoLibre ? `Contexto adicional: ${state.textoLibre}` : ''}
+
+Generá el output final como: ${OUTPUT_LABELS[outputType] || outputType}
+Tiene que ser copiable y listo para usar directamente.`;
+
+  return groqRequest(SYSTEM_OUTPUT, prompt, 700);
 }
 
-async function getNextStep(state) {
-  const system = 'Sos un senior UX designer. Español rioplatense. Sin markdown. Sin asteriscos. Respuesta corta.';
-  const prompt = `Contexto: ${buildContext(state)}\n\nEscribí 2 oraciones concretas sobre el próximo paso para ESTE caso específico. Sin introducción, sin comillas.`;
-  return groqRequest(system, prompt, 400);
-}
+async function refineOutput(currentOutput, instruction) {
+  const system = `Sos un asistente interno. Modificá el artefacto según la instrucción.
+Español rioplatense. Solo devolvé el artefacto modificado, sin explicaciones.`;
 
-async function generateUserStory(state) {
-  const system = 'Sos un senior UX designer. Español rioplatense. Sin markdown. Sin asteriscos.';
-  const prompt = `Contexto del proceso completado:\n${buildContext(state)}\n\nGenerá una user story completa lista para estimar, con este formato exacto:\n\nComo [tipo de usuario], quiero [acción],\npara [beneficio].\n\nContexto: [1-2 oraciones de contexto para el equipo de desarrollo]\n\nCriterios de aceptación:\n- [criterio 1]\n- [criterio 2]\n- [criterio 3]`;
-  return groqRequest(system, prompt, 800);
+  const prompt = `Artefacto actual:
+${currentOutput}
+
+Instrucción: ${instruction}
+
+Devolvé solo el artefacto modificado.`;
+
+  return groqRequest(system, prompt, 700);
 }

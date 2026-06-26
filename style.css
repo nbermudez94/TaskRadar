@@ -568,3 +568,225 @@ textarea::placeholder { color: var(--text-muted); }
   margin-top: 28px;
   animation: fadeIn 0.22s ease;
 }
+
+/* ─── No tengo tareas — nuevo flujo ─────────────────────── */
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text);
+  animation: fadeIn 0.15s ease;
+}
+
+.option-card::after {
+  content: '→';
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.option-card:hover { border-color: #555; background: var(--surface2); }
+.option-card:hover::after { color: var(--text); transform: translateX(3px); }
+
+.option-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+}
+
+.option-card.selected::after { color: var(--accent); transform: translateX(3px); }
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.breadcrumb-item {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--surface2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-sep {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 72px 24px;
+  text-align: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.loading-title  { font-size: 17px; font-weight: 600; }
+.loading-subtitle { font-size: 14px; color: var(--text-muted); }
+
+/* Diagnóstico IA */
+.diagnostico-box {
+  background: var(--accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--accent-hover);
+  margin-bottom: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Grid de 3 cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+@media (max-width: 640px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+.action-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition);
+}
+
+.action-card:hover { border-color: #555; }
+
+.card-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+
+.card-badge-rapida     { background: rgba(34, 197, 94, 0.12); color: #4ade80; }
+.card-badge-equipo     { background: rgba(99, 102, 241, 0.12); color: #818cf8; }
+.card-badge-estrategica{ background: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.card-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.card-detail-label {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+/* Output final */
+.chosen-card-ref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.chosen-card-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.output-box {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  min-height: 140px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.output-text {
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+.refine-section { margin-top: 4px; }
+
+.refine-section .section-title {
+  margin-bottom: 10px;
+}
+
+.refine-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
