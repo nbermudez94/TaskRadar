@@ -34,13 +34,18 @@ async function generateCards(state) {
     preguntas: 'preguntas para destrabar', sorpresa: 'lo que mejor le quede al caso'
   };
 
-  const prompt = `La persona respondió:
+  const tieneTexto = state.textoLibre && state.textoLibre.trim().length > 2;
+
+  const prompt = `${tieneTexto ? `La persona describió su situación con estas palabras exactas:
+"${state.textoLibre.trim()}"
+
+Esto es lo más importante. Las recomendaciones deben ser ESPECÍFICAS a lo que escribió arriba, no genéricas.
+` : ''}La persona también seleccionó:
 - Situación: ${SITUACION_LABELS[state.situacion] || state.situacion}
 - Detalle: ${state.detalle}
 - Quiere producir: ${OUTPUT_LABELS[state.outputType] || state.outputType}
-${state.textoLibre ? `- Contexto adicional: ${state.textoLibre}` : ''}
 
-Detectá el tipo de bloqueo y generá exactamente 3 caminos de acción distintos.
+${tieneTexto ? 'Usá las palabras exactas de la persona para generar caminos concretos y relevantes a SU caso específico.' : 'Detectá el tipo de bloqueo.'} Generá exactamente 3 caminos de acción distintos.
 
 Respondé con este JSON exacto:
 {
