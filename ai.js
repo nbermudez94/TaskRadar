@@ -16,7 +16,9 @@ Tu objetivo es ayudar a alguien que se siente trabado, sin tareas o sin direcci�
 Respondé SOLO con JSON válido, sin texto extra ni markdown adicional.
 Tono: práctico, humano, un poco liviano. Español rioplatense.
 No des consejos genéricos. No pidas proyecto primero.
-Siempre generá acciones concretas y accionables.`;
+Siempre generá acciones concretas y accionables.
+
+IMPORTANTE: Todas las acciones deben ser propias del trabajo de UX cuando tenga sentido. Ejemplos de acciones UX válidas: mapear un flujo de usuario, revisar research existente, hacer un benchmark de competidores, armar un documento de discovery, escribir guía de entrevista, priorizar hallazgos, definir criterios de éxito para una feature, hacer un audit de usabilidad, explorar patrones de diseño, sistematizar feedback de usuarios, preparar una propuesta de diseño, armar mapa de empatía, generar prototipos rápidos en papel, etc. Si el contexto no da pistas de área específica, elegí la acción UX más útil para la situación.`;
 
 async function generateCards(state) {
   const SITUACION_LABELS = {
