@@ -111,9 +111,11 @@ function renderStep1() {
       <textarea id="textoLibre" placeholder="Contame en una frase, si querés." rows="2">${esc(state.textoLibre)}</textarea>
     </div>`;
 
+  const puedeAvanzar = !!state.situacion || state.textoLibre.trim().length > 2;
+
   $footer.innerHTML = `
     <div class="footer-inner">
-      <button class="btn btn-primary" id="btnNext" ${!state.situacion ? 'disabled' : ''}>Continuar →</button>
+      <button class="btn btn-primary" id="btnNext" ${!puedeAvanzar ? 'disabled' : ''}>Continuar →</button>
     </div>`;
 
   $main.querySelectorAll('.option-card').forEach(el => {
@@ -127,8 +129,17 @@ function renderStep1() {
     });
   });
 
-  document.getElementById('textoLibre').addEventListener('input', e => { state.textoLibre = e.target.value; });
-  document.getElementById('btnNext').addEventListener('click', () => { if (state.situacion) { state.step = 2; render(); } });
+  document.getElementById('textoLibre').addEventListener('input', e => {
+    state.textoLibre = e.target.value;
+    const canGo = !!state.situacion || state.textoLibre.trim().length > 2;
+    document.getElementById('btnNext').disabled = !canGo;
+  });
+  document.getElementById('btnNext').addEventListener('click', () => {
+    if (!state.situacion && state.textoLibre.trim().length > 2) {
+      state.situacion = 'trabado';
+    }
+    if (state.situacion) { state.step = 2; render(); }
+  });
 }
 
 // ─── Paso 2: Pregunta contextual ─────────────────────────
