@@ -406,9 +406,9 @@ body {
 }
 
 .alert-info {
-  background: var(--accent-soft);
-  border-color: rgba(79, 70, 229, 0.25);
-  color: var(--accent-hover);
+  background: #eaf0f4;
+  border-color: rgba(86, 166, 218, 0.35);
+  color: #1c398e;
 }
 
 .alert-success {
@@ -942,10 +942,10 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 }
 
 .card-primer-paso-box {
-  background: var(--accent-soft);
+  background: #eaf0f4;
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid #56a6da;
 }
 
 .card-primer-paso-label {
@@ -991,9 +991,9 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 }
 
 .card-micro-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--surface2);
 }
 
 .micro-icon {
@@ -1005,8 +1005,8 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 .btn-elegir-camino {
   width: 100%;
   padding: 14px;
-  background: var(--text);
-  color: var(--bg);
+  background: #1c398e;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius);
   font-size: 13px;
@@ -1014,10 +1014,10 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
   letter-spacing: 0.4px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity var(--transition);
+  transition: background var(--transition);
 }
 
-.btn-elegir-camino:hover { opacity: 0.85; }
+.btn-elegir-camino:hover { background: #181f47; }
 
 /* Card loading state */
 .action-card-loading { /* hereda grid/subgrid de .action-card */ }
@@ -1119,9 +1119,9 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 }
 
 .refine-chip:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--surface2);
 }
 
 .refine-regen {
