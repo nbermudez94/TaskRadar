@@ -405,29 +405,22 @@ function renderStep5() {
     </div>
     <div class="output-box" id="outputBox">
       ${state.outputFinal
-        ? `<div class="output-text">${renderMarkdown(state.outputFinal)}</div>`
+        ? `<div class="output-text">${esc(state.outputFinal)}</div>`
         : `<div class="ai-loading"><div class="spinner"></div> Generando...</div>`}
     </div>
     ${state.outputFinal ? `
-      <div class="refine-section">
-        <div class="refine-groups">
-          <div class="refine-group">
-            <span class="refine-label">Ajustar</span>
-            <div class="refine-btns">
-              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más corto, mantené lo esencial">Más corto</button>
-              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más informal y directo, tono rioplatense">Más informal</button>
-              <button class="btn btn-ghost btn-sm" data-refine="Hacelo más claro y estructurado">Más claro</button>
-            </div>
-          </div>
-          <div class="refine-group">
-            <span class="refine-label">Convertir a</span>
-            <div class="refine-btns">
-              <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una checklist con ítems accionables usando formato '- [ ] ítem'">Checklist</button>
-              <button class="btn btn-ghost btn-sm" data-refine="Convertilo en una tarea con título, descripción breve y primer paso">Tarea</button>
-            </div>
-          </div>
+      <div class="refine-bar">
+        <div class="refine-bar-actions">
+          <span class="refine-bar-label">Ajustar</span>
+          <button class="refine-chip" data-refine="Hacelo más corto, mantené lo esencial">Más corto</button>
+          <button class="refine-chip" data-refine="Hacelo más informal y directo, tono rioplatense">Más informal</button>
+          <button class="refine-chip" data-refine="Hacelo más claro y estructurado">Más claro</button>
+          <span class="refine-bar-divider"></span>
+          <span class="refine-bar-label">Convertir a</span>
+          <button class="refine-chip" data-refine="Convertilo en una checklist con ítems accionables usando formato '- [ ] ítem'">Checklist</button>
+          <button class="refine-chip" data-refine="Convertilo en una tarea con título, descripción breve y primer paso">Tarea</button>
         </div>
-        <button class="btn-regenerar" id="btnRegenerar">↺ Regenerar</button>
+        <button class="refine-regen" id="btnRegenerar">↺ Regenerar</button>
       </div>` : ''}`;
 
   $footer.innerHTML = `
