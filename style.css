@@ -2,19 +2,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* KZ Brand palette */
-  --bg: #f5f6f8;
+  /* KZ Brand palette — warm cream + navy + burnt orange */
+  --bg: #FAF8F4;
   --surface: #FFFFFF;
-  --surface2: #eaf0f4;
-  --border: #d7e2ea;
-  --border-soft: #e4ecf2;
-  --border-strong: #4a5565;
-  --text: #0a0a0a;
-  --text-muted: #4a5565;
-  --text-dim: #8896a8;
-  --accent: #eb7520;
-  --accent-hover: #c4611a;
-  --accent-soft: rgba(235, 117, 32, 0.09);
+  --surface2: #F4EDE4;
+  --border: #EAE0D6;
+  --border-soft: #F0E9E0;
+  --border-strong: #C4A898;
+  --text: #181C2E;
+  --text-muted: #6B6070;
+  --text-dim: #A8998E;
+  --accent: #C4611A;
+  --accent-hover: #A34E12;
+  --accent-soft: rgba(196, 97, 26, 0.09);
   --success: #15803D;
   --warning: #D97706;
   --danger: #DC2626;
@@ -22,9 +22,9 @@
   --radius-sm: 8px;
   --sidebar-w: 290px;
   --transition: 0.18s ease;
-  --footer-bg: rgba(245, 246, 248, 0.94);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+  --footer-bg: rgba(250, 248, 244, 0.94);
+  --shadow-sm: 0 1px 3px rgba(24, 28, 46, 0.06), 0 1px 2px rgba(24, 28, 46, 0.04);
+  --shadow-md: 0 4px 16px rgba(24, 28, 46, 0.10), 0 2px 6px rgba(24, 28, 46, 0.06);
 }
 
 html, body { height: 100%; }
@@ -46,17 +46,17 @@ body {
 
 .sidebar {
   /* Sidebar mantiene paleta oscura independientemente del tema de página */
-  --bg: #0f1225;
-  --surface: #181f47;
-  --surface2: #1c2455;
-  --border: #2a3568;
-  --border-strong: #56a6da;
-  --text: #f2f2f4;
-  --text-muted: #a0b8cc;
-  --text-dim: #6a8099;
-  --accent: #56a6da;
-  --accent-hover: #7dc0e8;
-  --accent-soft: rgba(86, 166, 218, 0.14);
+  --bg: #0E1120;
+  --surface: #181C2E;
+  --surface2: #222840;
+  --border: #2A3050;
+  --border-strong: #C4611A;
+  --text: #F2EFE8;
+  --text-muted: #9896A4;
+  --text-dim: #5E5C6A;
+  --accent: #C4611A;
+  --accent-hover: #D4732A;
+  --accent-soft: rgba(196, 97, 26, 0.15);
   --success: #34d399;
 
   width: var(--sidebar-w);
@@ -293,7 +293,7 @@ body {
   font-weight: 500;
 }
 
-.project-card:hover { border-color: #555; background: var(--surface2); }
+.project-card:hover { border-color: var(--border-strong); background: var(--surface2); }
 
 .project-card.selected {
   border-color: var(--accent);
@@ -321,7 +321,7 @@ body {
   user-select: none;
 }
 
-.option-btn:hover { border-color: #555; background: var(--surface2); }
+.option-btn:hover { border-color: var(--border-strong); background: var(--surface2); }
 
 .option-btn.selected {
   border-color: var(--accent);
@@ -348,7 +348,7 @@ body {
   color: var(--text);
 }
 
-.chip:hover { border-color: #555; background: var(--surface2); }
+.chip:hover { border-color: var(--border-strong); background: var(--surface2); }
 
 .chip.selected {
   border-color: var(--accent);
@@ -406,9 +406,9 @@ body {
 }
 
 .alert-info {
-  background: #eaf0f4;
-  border-color: rgba(86, 166, 218, 0.35);
-  color: #1c398e;
+  background: var(--accent-soft);
+  border-color: rgba(196, 97, 26, 0.25);
+  color: var(--accent-hover);
 }
 
 .alert-success {
@@ -942,10 +942,10 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 }
 
 .card-primer-paso-box {
-  background: #eaf0f4;
+  background: var(--accent-soft);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  border-left: 3px solid #56a6da;
+  border-left: 3px solid var(--accent);
 }
 
 .card-primer-paso-label {
@@ -1005,8 +1005,8 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
 .btn-elegir-camino {
   width: 100%;
   padding: 14px;
-  background: #1c398e;
-  color: #ffffff;
+  background: #181C2E;
+  color: #F2EFE8;
   border: none;
   border-radius: var(--radius);
   font-size: 13px;
@@ -1017,7 +1017,7 @@ textarea::placeholder { color: var(--text-dim); font-style: italic; }
   transition: background var(--transition);
 }
 
-.btn-elegir-camino:hover { background: #181f47; }
+.btn-elegir-camino:hover { background: #222840; }
 
 /* Card loading state */
 .action-card-loading { /* hereda grid/subgrid de .action-card */ }
