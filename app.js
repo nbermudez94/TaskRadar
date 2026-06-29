@@ -76,6 +76,20 @@ function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function renderMarkdown(text) {
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>')
+    .replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>')
+    .replace(/^- \[ \] (.+)$/gm, '<label class="md-check"><input type="checkbox" disabled> <span>$1</span></label>')
+    .replace(/^- \[x\] (.+)$/gim, '<label class="md-check checked"><input type="checkbox" checked disabled> <span>$1</span></label>')
+    .replace(/^- (.+)$/gm, '<span class="md-li">· $1</span>')
+    .replace(/^\d+\. (.+)$/gm, '<span class="md-li md-li-num">$1</span>')
+    .replace(/\n\n/g, '<div class="md-gap"></div>')
+    .replace(/\n/g, '<br>');
+}
+
 // Valor seleccionado en cada paso, para mostrar bajo el título en el sidebar
 function stepValue(n) {
   switch (n) {
@@ -391,7 +405,7 @@ function renderStep5() {
     </div>
     <div class="output-box" id="outputBox">
       ${state.outputFinal
-        ? `<div class="output-text">${esc(state.outputFinal)}</div>`
+        ? `<div class="output-text">${renderMarkdown(state.outputFinal)}</div>`
         : `<div class="ai-loading"><div class="spinner"></div> Generando...</div>`}
     </div>
     ${state.outputFinal ? `

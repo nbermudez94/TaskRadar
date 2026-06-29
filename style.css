@@ -828,11 +828,12 @@ textarea::placeholder { color: var(--text-muted); }
 
 .action-card {
   box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 .action-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .card-badge {
@@ -934,10 +935,10 @@ textarea::placeholder { color: var(--text-muted); }
 }
 
 .card-primer-paso-box {
-  background: var(--surface2);
+  background: var(--accent-soft);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  border-left: 2px solid var(--accent);
+  border-left: 3px solid var(--accent);
 }
 
 .card-primer-paso-label {
@@ -1053,8 +1054,55 @@ textarea::placeholder { color: var(--text-muted); }
 }
 
 .output-text {
-  white-space: pre-wrap;
   color: var(--text);
+  line-height: 1.8;
+}
+
+.output-text .md-h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+
+.output-text .md-h3 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 8px 0 2px;
+}
+
+.output-text .md-gap {
+  display: block;
+  height: 6px;
+}
+
+.output-text .md-li {
+  display: block;
+  padding-left: 4px;
+  color: var(--text);
+}
+
+.output-text .md-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: default;
+  transition: background var(--transition);
+}
+
+.output-text .md-check:hover {
+  background: var(--surface2);
+}
+
+.output-text .md-check input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
 }
 
 /* Paso 5 — acciones de refinamiento agrupadas */
@@ -1068,7 +1116,7 @@ textarea::placeholder { color: var(--text-muted); }
 
 .refine-groups {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   flex: 1;
   flex-wrap: wrap;
 }
@@ -1077,6 +1125,10 @@ textarea::placeholder { color: var(--text-muted); }
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
 }
 
 .refine-label {
