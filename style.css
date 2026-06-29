@@ -2,19 +2,19 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Light theme — warm, accessible, polished */
-  --bg: #F5F4F0;
+  /* KZ Brand palette */
+  --bg: #f5f6f8;
   --surface: #FFFFFF;
-  --surface2: #F0EDE6;
-  --border: #E3E0D9;
-  --border-soft: #EDEAE3;
-  --border-strong: #B8B4AB;
-  --text: #18181B;
-  --text-muted: #6C6B78;
-  --text-dim: #A8A6B4;
-  --accent: #4F46E5;
-  --accent-hover: #3730A3;
-  --accent-soft: rgba(79, 70, 229, 0.08);
+  --surface2: #eaf0f4;
+  --border: #d7e2ea;
+  --border-soft: #e4ecf2;
+  --border-strong: #4a5565;
+  --text: #0a0a0a;
+  --text-muted: #4a5565;
+  --text-dim: #8896a8;
+  --accent: #eb7520;
+  --accent-hover: #c4611a;
+  --accent-soft: rgba(235, 117, 32, 0.09);
   --success: #15803D;
   --warning: #D97706;
   --danger: #DC2626;
@@ -22,7 +22,7 @@
   --radius-sm: 8px;
   --sidebar-w: 290px;
   --transition: 0.18s ease;
-  --footer-bg: rgba(245, 244, 240, 0.94);
+  --footer-bg: rgba(245, 246, 248, 0.94);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
 }
@@ -46,17 +46,17 @@ body {
 
 .sidebar {
   /* Sidebar mantiene paleta oscura independientemente del tema de página */
-  --bg: #0a0a0c;
-  --surface: #141417;
-  --surface2: #1d1d22;
-  --border: #2a2a30;
-  --border-strong: #4a4a56;
+  --bg: #0f1225;
+  --surface: #181f47;
+  --surface2: #1c2455;
+  --border: #2a3568;
+  --border-strong: #56a6da;
   --text: #f2f2f4;
-  --text-muted: #9a9aa6;
-  --text-dim: #6b6b76;
-  --accent: #7c7cf0;
-  --accent-hover: #9595f5;
-  --accent-soft: rgba(124, 124, 240, 0.13);
+  --text-muted: #a0b8cc;
+  --text-dim: #6a8099;
+  --accent: #56a6da;
+  --accent-hover: #7dc0e8;
+  --accent-soft: rgba(86, 166, 218, 0.14);
   --success: #34d399;
 
   width: var(--sidebar-w);
