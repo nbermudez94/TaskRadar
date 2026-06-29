@@ -45,19 +45,10 @@ body {
 }
 
 .sidebar {
-  /* Sidebar mantiene paleta oscura independientemente del tema de página */
-  --bg: #0E1120;
-  --surface: #181C2E;
-  --surface2: #222840;
-  --border: #2A3050;
-  --border-strong: #C4611A;
-  --text: #F2EFE8;
-  --text-muted: #9896A4;
-  --text-dim: #5E5C6A;
-  --accent: #C4611A;
-  --accent-hover: #D4732A;
-  --accent-soft: rgba(196, 97, 26, 0.15);
-  --success: #34d399;
+  /* Sidebar warm — misma paleta KZ, tono arena para diferenciarse del contenido */
+  --surface: #EDE4D8;
+  --surface2: #E2D6C8;
+  --border: #D0C5B5;
 
   width: var(--sidebar-w);
   flex-shrink: 0;
