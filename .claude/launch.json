@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "taskradar",
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["server.js"],
+      "cwd": "/Users/nbermudez94/Projects/TaskRadar",
+      "port": 3000,
+      "autoPort": false
+    }
+  ]
+}
